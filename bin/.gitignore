@@ -1,0 +1,4 @@
+# Exclude everything in the /bin Folder
+*
+# except for this file
+!.gitignore

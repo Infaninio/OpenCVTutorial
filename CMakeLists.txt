@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 2.8)
+
+project( OpenCV )
+find_package( OpenCV REQUIRED )
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "~/CLionProjects/OpenCVTutorial/bin")
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories(~/CLionProjects/OpenCVTutorial/src)
+include_directories(~/CLionProjects/OpenCVTutorial/include)
+add_executable( DisplayImage src/main.cpp src/DisplayImage.cpp )
+target_link_libraries( DisplayImage ${OpenCV_LIBS})
