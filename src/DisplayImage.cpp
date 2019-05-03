@@ -16,6 +16,7 @@ int displayImage(int argc, char** argv )
         printf("usage: DisplayImage.out <Image_Path>\n");
         return -1;
     }
+    printf("%s", argv[1]);
     Mat image;
     image = imread( argv[1], 1 );
     if ( !image.data )
