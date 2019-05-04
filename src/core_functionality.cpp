@@ -14,6 +14,9 @@ int color_reduction(int argc, char** argv){
         return -1;
     }
 
+    /*
+     * Char in Zahl umwandeln, C++ Style
+     */
     int devide = 0;
     std::stringstream s;
     s << argv[2];
@@ -73,7 +76,9 @@ int color_reduction(int argc, char** argv){
         p[k] = lookuptable[k];
     }
 
-
+    /*
+     * Bibliotheks Funktion, muss aber auch mit LookUpTable gefüttert werden
+     *
     time = (double)cv::getTickCount();
     cv::LUT(orginal,table,orginal);
     time = (cv::getTickCount() - time)/cv::getTickFrequency();
@@ -81,10 +86,82 @@ int color_reduction(int argc, char** argv){
 
     cv::namedWindow("Copy", cv::WINDOW_AUTOSIZE);
     cv::imshow("Copy", copy);
-
+    */
 
     cv::waitKey();
 
 }
+
+
+
+int mask_operations(int argc, char** argv){
+
+
+    if(argc < 2){
+        std::cout << "Es wurden zu wenig Argumente übergeben, Aufruf: " << argv[0] << " Bildpfad.jpg" << std::endl;
+        return -1;
+    }
+
+    cv::Mat bild, bildn;
+    bild = cv::imread(argv[1]);
+
+    if(bild.empty())
+    {
+        std::cout << "Fehler beim Lesen der Datei: " << argv[1] << std::endl;
+        return -1;
+    }
+
+    /*
+     * Eigene Funktion wird aufgerufen
+     * Bei uns wird keine individuelle Matrix übergeben
+     */
+    sharpen(bild, bildn);
+
+
+    cv::namedWindow("Bild", cv::WINDOW_AUTOSIZE);
+    cv::imshow("Bild", bildn);
+    cv::imshow("Orginal", bild);
+    /*
+     * OpenCV Funktion
+     */
+    cv::waitKey();
+
+    return 0;
+
+
+
+}
+
+
+cv::Mat* sharpen(cv::Mat& input, cv::Mat& output){
+    CV_Assert(input.depth() == CV_8U);
+
+    output.create(input.size(), input.type());
+
+    int nChannels = input.channels();
+
+    for (int i = 1; i < input.rows - 1; ++i) {
+        uchar* previous = input.ptr(i - 1);
+        uchar* current = input.ptr(i);
+        uchar* next = input.ptr(i + 1);
+        uchar* out = output.ptr(i);
+
+        for (int j = nChannels; j < (input.cols * nChannels) - nChannels; ++j) {
+            out[j] = cv::saturate_cast<uchar>( 5*current[j] - current[j-nChannels] - current[j+nChannels] - previous[j] - next[j]);
+        }
+
+    }
+
+    output.row(0).setTo(cv::Scalar(0));
+    output.row(output.rows - 1).setTo(cv::Scalar(0));
+
+    output.col(0).setTo(cv::Scalar(0));
+    output.col(output.cols - 1).setTo(cv::Scalar(0));
+
+    return &output;
+
+}
+
+
 
 
