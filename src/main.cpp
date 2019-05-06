@@ -9,7 +9,9 @@ int main(int argc, char** argv ){
 
 
     //return color_reduction(argc, argv);
-    return mask_operations(argc, argv);
+    //return mask_operations(argc, argv);
+
+    return basic_operations(argc, argv);
 
 
 }

@@ -92,8 +92,6 @@ int color_reduction(int argc, char** argv){
 
 }
 
-
-
 int mask_operations(int argc, char** argv){
 
 
@@ -121,9 +119,21 @@ int mask_operations(int argc, char** argv){
     cv::namedWindow("Bild", cv::WINDOW_AUTOSIZE);
     cv::imshow("Bild", bildn);
     cv::imshow("Orginal", bild);
+
     /*
      * OpenCV Funktion
      */
+    cv::Mat Mask = (cv::Mat_<char>(3,3) << 0,-1,0,
+                                            -1,5,-1,
+                                            0,-1,0);
+
+    cv::filter2D(bild, bildn, bild.depth(), Mask);
+
+    cv::imshow("Bild2", bildn);
+
+
+
+
     cv::waitKey();
 
     return 0;
@@ -132,6 +142,51 @@ int mask_operations(int argc, char** argv){
 
 }
 
+int basic_operations(int argc, char** argv){
+
+    if(argc < 2){
+        std::cout << "Es wurden zu wenig Argumente übergeben. Bitte Dateipfad als ersten Paramter übergeben\n";
+        std::cout << "Beispiel:\t DisplayImage ~/Bilder/test.jpg" << std::endl;
+        return -1;
+    }
+
+
+
+    cv::Mat img1, img2, img3;
+
+    /*
+     * IMREAD_GRAYSCALE = Lädt das Bild in grauen Farbstufen
+     * IMREAD_REDUCED_COLOR_X = Verkleinert das gelesen Bild um den angegeben Faktor
+     *          X = 2 || 4 || 8
+     *
+     */
+    img1 = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
+    img2 = cv::imread(argv[1], cv::IMREAD_REDUCED_COLOR_2);
+
+    /*
+     * Speicher eines Bildes
+     */
+    //cv::imwrite("/home/martin/Bilder/test.jpg", img2);
+
+
+    if(img1.empty() || img2.empty()){
+        std::cout << "Fehler beim Lesen der Datei";
+        return -2;
+    }
+
+
+
+
+
+
+    cv::imshow("Image 1", img1);
+    cv::imshow("Image 2", img2);
+
+    cv::waitKey();
+
+    return 1;
+
+}
 
 cv::Mat* sharpen(cv::Mat& input, cv::Mat& output){
     CV_Assert(input.depth() == CV_8U);

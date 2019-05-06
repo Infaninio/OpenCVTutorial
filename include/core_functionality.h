@@ -8,8 +8,8 @@
 #include <opencv2/opencv.hpp>
 
 int color_reduction(int argc, char** argv);
-
 int mask_operations(int argc, char** argv);
+int basic_operations(int argc, char** argv);
 
 cv::Mat* sharpen(cv::Mat& Input, cv::Mat& Output);
 
