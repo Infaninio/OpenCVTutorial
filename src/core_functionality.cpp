@@ -174,18 +174,66 @@ int basic_operations(int argc, char** argv){
         return -2;
     }
 
+    /*
+     * Färben eines Bildes in Rot. Entscheident hier ist der Zugriff auf einzelne Pixelwerte.
+     *
+    cv::Vec3b farben;
+    farben[0] = 0;
+    farben[1] = 0;
+    farben[2] = 255;
+
+    for (int i = 0; i < img2.rows ; ++i) {
+        for (int j = 0; j < img2.cols; ++j) {
+            img2.at<cv::Vec3b>(i,j) = farben;
+        }
+    }
+     */
 
 
 
+    //std::cout << "Typ Grayscale: " << img1.type() << "\t Typ Klein: " << img2.type() << std::endl;
+    //std::cout << CV_8UC1 << "\t" << CV_8UC3 << std::endl;
 
+    cv::Sobel(img2, img3, CV_32F,1,0);
 
-    cv::imshow("Image 1", img1);
+    //cv::imshow("Image 1", img1);
     cv::imshow("Image 2", img2);
+    cv::imshow("Image 3", img3);
+
 
     cv::waitKey();
 
     return 1;
 
+}
+
+cv::Mat blend2images(std::string path1, std::string path2, float alpha){
+    if (alpha < 0 || alpha >1){
+        std::cout << "Alpha muss einen Wert zwischen 0 und 1 haben\nAngegebenr Wert: " << alpha << std::endl;
+    }
+    cv::Mat src1, src2, dst;
+    src1 = cv::imread(path1);
+    src2 = cv::imread(path2);
+
+    cv::Size2i newSize;
+    newSize.height = 1080;
+    newSize.width = 1920;
+
+    if(src1.empty()){
+        std::cout << "Fehler beim Lesen der Datei: " << path1 << std::endl;
+        return dst;
+    } else if (src2.empty()){
+        std::cout << "Fehler beim Lesen der Datei: " << path2 << std::endl;
+    }
+
+    cv::resize(src1, src1, newSize);
+    cv::resize(src2,src2,newSize);
+
+    cv::addWeighted(src1,alpha,src2,1-alpha,0,dst);
+
+    cv::imshow("Übereinander Gelegte Bilder",dst);
+    cv::waitKey();
+    return dst;
 }
 
 cv::Mat* sharpen(cv::Mat& input, cv::Mat& output){
