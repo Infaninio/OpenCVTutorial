@@ -2,6 +2,8 @@
 // Created by martin on 01.05.19.
 //
 
+#define wSize 1000
+
 #include "../include/core_functionality.h"
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
@@ -207,6 +209,108 @@ int basic_operations(int argc, char** argv){
 
 }
 
+int image_transformation(int argc, char** argv){
+    if(argc < 2){
+        std::cout << "Zu wenig Argumente übergebn, bitte wie folgt aufrufen\n" << argv[0] << " /ordner/bild.jpg" << std::endl;
+        return -1;
+    }
+
+    // Einlesen der Werte für die Helligkeits und Kontrast überarbeitung
+    float alpha, beta, gamma;
+    std::cout << "Bitte alpha-Wert eingeben: ";
+    std::cin >> alpha;
+
+    std::cout << "Bitte beta-Wert eingeben: ";
+    std::cin >> beta;
+
+    std::cout << "Bitte gamma-Wert eingeben: ";
+    std::cin >> gamma;
+
+    //Einlesen des Bildes
+    cv::Mat src, dst1, dst2;
+    src = cv::imread(argv[1],cv::IMREAD_COLOR);
+
+
+    //Klassische Art und Weise, Pixel werte mit alpha multipliziern und beta addieren
+    linearTransformation(src,dst1,alpha,beta);
+
+
+
+    //Gamma überarbeitung des Bildes
+    gammaTransformation(src,dst2,gamma);
+
+    cv::imshow("Orginal", src);
+    cv::imshow("Lineare Transformation", dst1);
+    cv::imshow("Gamma Transformation", dst2);
+
+    cv::waitKey();
+
+    return 0;
+
+
+}
+
+int drawing(){
+    cv::Mat atomImage = cv::Mat::zeros(wSize,wSize, CV_8UC3);
+    cv::Mat turmImage = cv::Mat::zeros(wSize,wSize,CV_8UC3);
+
+    cv::Point punkt(wSize/2, wSize/2);
+
+    cv::circle(atomImage,punkt,wSize/25,cv::Scalar(0,0,255),cv::FILLED,cv::LINE_8);
+
+    cv::ellipse(atomImage,punkt,cv::Size(wSize/4,wSize/16),0,0,360,cv::Scalar(255,0,0),5,cv::LINE_4);
+    cv::ellipse(atomImage,punkt,cv::Size(wSize/4,wSize/16),45,0,360,cv::Scalar(0,255,0),5,cv::LINE_8);
+    cv::ellipse(atomImage,punkt,cv::Size(wSize/4,wSize/16),-45,0,360,cv::Scalar(255,255,0),5,cv::LINE_AA);
+    cv::ellipse(atomImage,punkt,cv::Size(wSize/4,wSize/16),90,0,360,cv::Scalar(0,255,0),5,cv::LINE_4);
+
+
+
+    cv::Point turmArr[20];
+
+    turmArr[0] = cv::Point(    wSize/4,   7*wSize/8 );
+    turmArr[1]  = cv::Point(  3*wSize/4,   7*wSize/8 );
+    turmArr[2]  = cv::Point(  3*wSize/4,  13*wSize/16 );
+    turmArr[3]  = cv::Point( 11*wSize/16, 13*wSize/16 );
+    turmArr[4]  = cv::Point( 19*wSize/32,  3*wSize/8 );
+    turmArr[5]  = cv::Point(  3*wSize/4,   3*wSize/8 );
+    turmArr[6]  = cv::Point(  3*wSize/4,     wSize/8 );
+    turmArr[7]  = cv::Point( 26*wSize/40,    wSize/8 );
+    turmArr[8]  = cv::Point( 26*wSize/40,    wSize/4 );
+    turmArr[9]  = cv::Point( 22*wSize/40,    wSize/4 );
+    turmArr[10] = cv::Point( 22*wSize/40,    wSize/8 );
+    turmArr[11] = cv::Point( 18*wSize/40,    wSize/8 );
+    turmArr[12] = cv::Point( 18*wSize/40,    wSize/4 );
+    turmArr[13] = cv::Point( 14*wSize/40,    wSize/4 );
+    turmArr[14] = cv::Point( 14*wSize/40,    wSize/8 );
+    turmArr[15] = cv::Point(    wSize/4,     wSize/8 );
+    turmArr[16] = cv::Point(    wSize/4,   3*wSize/8 );
+    turmArr[17] = cv::Point( 13*wSize/32,  3*wSize/8 );
+    turmArr[18] = cv::Point(  5*wSize/16, 13*wSize/16 );
+    turmArr[19] = cv::Point(    wSize/4,  13*wSize/16 );
+
+    const cv::Point* ppt[1] = {turmArr};
+    int npt[1];
+    *npt = 20;
+
+
+    cv::fillPoly(turmImage, ppt,npt,1,cv::Scalar(255,255,255),cv::LINE_8);
+
+    cv::rectangle(turmImage,cv::Point(0,7*wSize/8),cv::Point(wSize,wSize),cv::Scalar(0,130,130),cv::FILLED);
+
+
+
+    cv::imshow("Atom", atomImage);
+    cv::moveWindow("Atom", 200,200);
+    cv::imshow("Turm", turmImage);
+    cv::moveWindow("Turm",1300,200);
+
+    cv::waitKey();
+
+    return 0;
+}
+
+
+
 cv::Mat blend2images(std::string path1, std::string path2, float alpha){
     if (alpha < 0 || alpha >1){
         std::cout << "Alpha muss einen Wert zwischen 0 und 1 haben\nAngegebenr Wert: " << alpha << std::endl;
@@ -264,6 +368,47 @@ cv::Mat* sharpen(cv::Mat& input, cv::Mat& output){
     return &output;
 
 }
+
+
+cv::Mat linearTransformation(cv::Mat& src, cv::Mat& dst, float alpha, float beta){
+    dst = cv::Mat::zeros(src.size(),src.type());
+
+
+    cv::Mat lookupTable(1,256,CV_8U);
+
+    uchar* p = lookupTable.ptr();
+
+    for (int i = 0; i < 256; ++i) {
+        p[i] = cv::saturate_cast<uchar>(alpha*i + beta);
+    }
+
+    cv::LUT(src,lookupTable,dst);
+
+    return dst;
+}
+
+
+cv::Mat gammaTransformation(cv::Mat& src, cv::Mat& dst, float gamma){
+
+    dst = cv::Mat::zeros(src.size(),src.type());
+
+
+    cv::Mat lookupTable(1,256,CV_8U);
+
+    uchar* p = lookupTable.ptr();
+
+    for (int i = 0; i < 256; ++i) {
+        p[i] = cv::saturate_cast<uchar>(cv::pow(i/255.0,gamma) * 255.0);
+    }
+
+    cv::LUT(src,lookupTable,dst);
+
+    return dst;
+
+}
+
+
+
 
 
 
