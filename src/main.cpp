@@ -4,6 +4,7 @@
 #include <iostream>
 #include "../include/DisplayImage.h"
 #include "../include/core_functionality.h"
+#include "../include/random.h"
 
 int main(int argc, char** argv ){
 
@@ -19,5 +20,8 @@ int main(int argc, char** argv ){
     //blend2images(path1, path2, 0.4);
 
     //return image_transformation(argc, argv);
-    return drawing();
+    //return drawing();
+    return drawRandomStuff();
+
 }
+
