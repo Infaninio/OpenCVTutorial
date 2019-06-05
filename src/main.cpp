@@ -21,7 +21,14 @@ int main(int argc, char** argv ){
 
     //return image_transformation(argc, argv);
     //return drawing();
-    return drawRandomStuff();
+    //return drawRandomStuff();
 
+    //diskreteFT(argc, argv);
+    //diskreteFT(1, argv);
+
+    fileReader(argc, argv);
+
+
+    //cv::waitKey();
 }
 

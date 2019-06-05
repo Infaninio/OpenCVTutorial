@@ -7,6 +7,7 @@
 #include "../include/core_functionality.h"
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
+#include <string>
 
 
 int color_reduction(int argc, char** argv){
@@ -309,8 +310,6 @@ int drawing(){
     return 0;
 }
 
-
-
 cv::Mat blend2images(std::string path1, std::string path2, float alpha){
     if (alpha < 0 || alpha >1){
         std::cout << "Alpha muss einen Wert zwischen 0 und 1 haben\nAngegebenr Wert: " << alpha << std::endl;
@@ -369,7 +368,6 @@ cv::Mat* sharpen(cv::Mat& input, cv::Mat& output){
 
 }
 
-
 cv::Mat linearTransformation(cv::Mat& src, cv::Mat& dst, float alpha, float beta){
     dst = cv::Mat::zeros(src.size(),src.type());
 
@@ -404,6 +402,152 @@ cv::Mat gammaTransformation(cv::Mat& src, cv::Mat& dst, float gamma){
     cv::LUT(src,lookupTable,dst);
 
     return dst;
+
+}
+
+
+int diskreteFT(int argc, char** argv){
+
+    std::string filename;
+
+    if(argc < 2){
+        //std::cout << "Zu wenig übergabe Werte, bitte Pfad zu bild angeben: " << argv[0] << " ../test.jpg" << std::endl;
+        //return -1;
+        filename = "/home/martin/Bilder/sudoku.png";
+    } else {
+
+        filename = argv[1];
+    }
+
+    using namespace std;
+    using namespace cv;
+
+
+
+    Mat I = imread(filename, IMREAD_GRAYSCALE);
+    if( I.empty()){
+        cout << "Error opening image" << endl;
+        return -1;
+    }
+    Mat padded;                            //expand input image to optimal size
+    int m = getOptimalDFTSize( I.rows );
+    int n = getOptimalDFTSize( I.cols ); // on the border add zero values
+    copyMakeBorder(I, padded, 0, m - I.rows, 0, n - I.cols, BORDER_CONSTANT, Scalar::all(0));
+    Mat planes[] = {Mat_<float>(padded), Mat::zeros(padded.size(), CV_32F)};
+    Mat complexI;
+    merge(planes, 2, complexI);         // Add to the expanded another plane with zeros
+    dft(complexI, complexI);            // this way the result may fit in the source matrix
+    // compute the magnitude and switch to logarithmic scale
+    // => log(1 + sqrt(Re(DFT(I))^2 + Im(DFT(I))^2))
+    split(complexI, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+    magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
+    Mat magI = planes[0];
+    magI += Scalar::all(1);                    // switch to logarithmic scale
+    log(magI, magI);
+    // crop the spectrum, if it has an odd number of rows or columns
+    magI = magI(Rect(0, 0, magI.cols & -2, magI.rows & -2));
+    // rearrange the quadrants of Fourier image  so that the origin is at the image center
+    int cx = magI.cols/2;
+    int cy = magI.rows/2;
+    Mat q0(magI, Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
+    Mat q1(magI, Rect(cx, 0, cx, cy));  // Top-Right
+    Mat q2(magI, Rect(0, cy, cx, cy));  // Bottom-Left
+    Mat q3(magI, Rect(cx, cy, cx, cy)); // Bottom-Right
+    Mat tmp;                           // swap quadrants (Top-Left with Bottom-Right)
+    q0.copyTo(tmp);
+    q3.copyTo(q0);
+    tmp.copyTo(q3);
+    q1.copyTo(tmp);                    // swap quadrant (Top-Right with Bottom-Left)
+    q2.copyTo(q1);
+    tmp.copyTo(q2);
+    normalize(magI, magI, 0, 1, NORM_MINMAX); // Transform the matrix with float values into a
+    // viewable image form (float between values 0 and 1).
+    imshow("Input Image" + argc       , I   );    // Show the result
+    imshow("spectrum magnitude" + argc, magI);
+
+    //waitKey();
+    return 0;
+}
+
+int fileReader(int argc, char** argv){
+    std::string filename = "/home/martin/test.yaml";
+
+    cv::FileStorage file(filename, cv::FileStorage::WRITE);
+
+    std::vector<std::string> filenames;
+    filenames.push_back("/home/martin/Bilder/sudoku_gedreht.png");
+    filenames.push_back("/home/martin/Bilder/hirsch.png");
+    filenames.push_back("/home/martin/Bilder/tempel.jpg");
+
+    file << "TestAttr" << "TRUE";
+    file << "NextAttr" << "FALSE";
+
+    file << "Files" << filenames;
+
+
+    //auto bild = cv::imread(argv[1],cv::IMREAD_COLOR);
+
+    //file << "BildMatrix" << bild;
+
+
+
+    file.release();
+
+
+
+
+
+    /*
+     * Lesen
+     */
+
+    cv::FileStorage readfile;
+    readfile.open(filename,cv::FileStorage::READ);
+
+    std::string test;
+
+    //Lesen eines einzelnen Attributs
+    readfile["TestAttr"] >> test;
+    std::cout << test << std::endl;
+
+
+    cv::FileNode testnode = readfile["NextAttr"];
+
+    if(!testnode.isSeq()){
+        std::cout << (std::string)testnode;
+    } else {
+        std::cout << "NextAttr, schein eine Sequenz zu sein";
+    }
+
+    cv::FileNode node = readfile["Files"];
+
+    if(!node.isSeq()){
+        std::cout << "Attribute Files ist keine Sequenz";
+        return -1;
+    }
+
+    cv::FileNodeIterator it = node.begin(), end = node.end();
+
+    for (; it != end ; ++it) {
+        std::cout << (std::string)*it << std::endl;
+    }
+
+    std::cout << (std::string)readfile["TestAttr"];
+
+    std::cout << readfile["TestAttr"].empty();
+
+
+    //cv::Mat neuesBild;
+
+    //readfile["BildMatrix"] >> neuesBild;
+
+    //cv::imshow("Yaml-Bild",neuesBild);
+
+
+    readfile.release();
+
+    cv::waitKey();
+
 
 }
 

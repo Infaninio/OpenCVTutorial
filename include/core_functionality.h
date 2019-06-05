@@ -12,6 +12,8 @@ int mask_operations(int argc, char** argv);
 int basic_operations(int argc, char** argv);
 int image_transformation(int argc, char** argv);
 int drawing();
+int diskreteFT(int argc, char** argv);
+int fileReader(int argc, char** argv);
 
 cv::Mat blend2images(std::string src1, std::string src2, float alpha);
 cv::Mat* sharpen(cv::Mat& Input, cv::Mat& Output);
