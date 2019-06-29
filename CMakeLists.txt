@@ -10,7 +10,7 @@ endif (WIN32)
 
 if (UNIX)
 	find_package( OpenCV REQUIRED )
-endif (WIN32)
+endif (UNIX)
 	
 
 

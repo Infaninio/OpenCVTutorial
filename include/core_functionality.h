@@ -14,7 +14,7 @@ int image_transformation(int argc, char** argv);
 int drawing();
 int diskreteFT(int argc, char** argv);
 int fileReader(int argc, char** argv);
-int smoothing(int argc, char** argv)
+int smoothing(std::string path);
 
 
 

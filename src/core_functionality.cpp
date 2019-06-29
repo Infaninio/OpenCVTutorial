@@ -568,21 +568,18 @@ int smoothing(std::string path){
     std::string method;
     std::cin >> method;
 
-
     if(method == "blur"){
-        cv::blur(original,smoothed);
-
-
+        cv::blur(original,smoothed,cv::Size(31,31));
 
     } else if (method == "gaus") {
+        cv::GaussianBlur(original, smoothed, cv::Size(31,31),0,0);
 
 
     } else if (method == "median"){
-
+        cv::medianBlur(original, smoothed,31);
 
     } else if (method == "bilateral"){
-
-
+        cv::bilateralFilter(original,smoothed,31,62,16);
 
     } else {
         std::cout << "Als Methode wurde " << method << " angegeben, dies ist nicht möglich nur: \n";
@@ -593,6 +590,8 @@ int smoothing(std::string path){
 
     cv::imshow("Bild",original);
     cv::imshow("Verändertes Bild", smoothed);
+
+    cv::waitKey();
 
     return 0;
 

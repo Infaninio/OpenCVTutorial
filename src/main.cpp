@@ -26,8 +26,8 @@ int main(int argc, char** argv ){
     //diskreteFT(argc, argv);
     //diskreteFT(1, argv);
 
-    fileReader(argc, argv);
-
+    //fileReader(argc, argv);
+    smoothing(argv[1]);
 
     //cv::waitKey();
 }
