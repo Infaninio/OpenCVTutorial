@@ -34,3 +34,5 @@
 #Build and Binary Folders
 cmake-build-debug/
 .idea/
+.vs/
+out/

@@ -86,6 +86,7 @@ int randRectangles(cv::Mat bild, cv::RNG rng, int cnt){
 
 
     }
+	return 0;
 }
 
 
@@ -96,6 +97,7 @@ int randCircles(cv::Mat bild, cv::RNG rng, int cnt){
 
         cv::circle(bild, pt,rng.uniform(1,WINDOWSIZEX/5),randColor(rng),rng.uniform(1,10), rng.uniform(1,8));
     }
+	return 0;
 }
 
 
@@ -109,6 +111,7 @@ int randEllipses(cv::Mat bild, cv::RNG rng, int cnt){
         cv::ellipse(bild,pt,sz,rng.gaussian(360),rng.gaussian(360),rng.gaussian(360),randColor(rng),rng.uniform(1,15));
 
     }
+	return 0;
 }
 
 
@@ -123,6 +126,7 @@ int randPolylines(cv::Mat bild, cv::RNG rng, int cnt){
 
         cv::polylines(bild,points,true,randColor(rng),rng.uniform(1,15));
     }
+	return 0;
 }
 
 
@@ -142,6 +146,7 @@ int randPolygons(cv::Mat bild, cv::RNG rng, int cnt){
 
 
     }
+	return 0;
 }
 
 
