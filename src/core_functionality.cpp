@@ -553,6 +553,52 @@ int fileReader(int argc, char** argv){
 
 
 
+int smoothing(std::string path){
+
+    cv::Mat original;
+    original = cv::imread(path,cv::IMREAD_COLOR);
+
+    if(original.empty()){
+        std::cout << "Datei " << path << " konnte nicht gelesen werden. Abbruch" << std::endl;
+    }
+
+    cv::Mat smoothed;
+    std::cout << "Bitte Smoothing Methode angeben, zur Auswahl stehen: \nblur, gaus, median, bilateral" << std::endl;
+
+    std::string method;
+    std::cin >> method;
+
+
+    if(method == "blur"){
+        cv::blur(original,smoothed);
+
+
+
+    } else if (method == "gaus") {
+
+
+    } else if (method == "median"){
+
+
+    } else if (method == "bilateral"){
+
+
+
+    } else {
+        std::cout << "Als Methode wurde " << method << " angegeben, dies ist nicht möglich nur: \n";
+        std::cout << "blur, gaus, median, bilateral" << std::endl;
+        return -1;
+    }
+
+
+    cv::imshow("Bild",original);
+    cv::imshow("Verändertes Bild", smoothed);
+
+    return 0;
+
+}
+
+
 
 
 
