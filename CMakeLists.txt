@@ -5,7 +5,7 @@ project( OpenCV )
 
 # Unterscheidung OS, 
 if (WIN32)
-	find_package( OpenCV REQUIRED PATHS "D:/OpenCV/opencv/build/x64/vc15/lib")
+	find_package( OpenCV REQUIRED PATHS $ENV{OPENCV_DIR}/lib)
 endif (WIN32)
 
 if (UNIX)
