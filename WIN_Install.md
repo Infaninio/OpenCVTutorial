@@ -1,18 +1,18 @@
-#Installation von OpenCV in Windows
+# Installation von OpenCV in Windows
 
 Leider Noch nicht Funktionsfähig, Laden der DLLs fehlt.
 
-##Vorausetzungen
+## Vorausetzungen
 * Visual Studio 2019 Community
 * GitHub Erweiterung für Visual Studio 2019 zu finden unter https://marketplace.visualstudio.com/items?itemName=GitHub.GitHubExtensionforVisualStudio
 
 
 
-##Offizielles Tutorial
+## Offizielles Tutorial
  https://docs.opencv.org/3.4/d3/d52/tutorial_windows_install.html
  
  
- ##Herunterladen der OpenCV-Verzeichnise
+ ## Herunterladen der OpenCV-Verzeichnise
  Um es so einfach wie möglich zu gestalten, werden immer vorkompilierte Librarys verwendet. 
  Diese können unter folgendem Link heruntergeladen werden:
   https://sourceforge.net/projects/opencvlibrary/
@@ -24,14 +24,16 @@ Leider Noch nicht Funktionsfähig, Laden der DLLs fehlt.
   setx -m OPENCV_DIR D:\OpenCV\opencv\build\x64\vc15
   ```
   
-##Starten von Visualstudio
+## Starten von Visualstudio
 Im Auswahlmenü auf Code klonen oder auschecken
 URL zu diesem Repository eingeben und klonen. Nun muss oben bei dem grünen "Play" Button ein Startelement
 ausgewählt werden. In diesem Fall "DisplayImage.exe" (Weitere könnnen Folgen). Das Projekt kann 
 gebaut werden. Bei der Ausführung kommt es noch zum Abbruch da die Dynamic Link Libraries fehlen.
-Das Laden dieser Dateien muss noch in den C++-Code integriert werden.
+Das Laden dieser Dateien muss noch in den C++-Code integriert werden. Bei einem Visual Studio CMake Projekt
+können beim Starten der Anwendung keine Argumente übergeben werden. Deshalb wird der Pfad zum Bild in 
+main.cpp hinterlegt. Diese sollte angepasst werde, damit auch ein Bild gefunden werden kann.
 
 
-##Workaround DLL
+## Workaround DLL
 Die DLL Dateien welche in dem OpenCV verzeichnis unter /build/x64/vc15/bin zu finden sind in
 den /bin Ordner des Repos kopieren.

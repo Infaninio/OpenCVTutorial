@@ -5,8 +5,21 @@
 #include "../include/DisplayImage.h"
 #include "../include/core_functionality.h"
 #include "../include/random.h"
+#include <string>
 
 int main(int argc, char** argv ){
+
+	std::string filePath;
+
+	if (1 >= argc)
+	{
+		//Kein Argument übergeben
+		filePath = "C:\\Users\\Martin\\Pictures\\bild.jpg";
+	}
+	else
+	{
+		filePath = argv[1];
+	}
 
 
     //return color_reduction(argc, argv);
@@ -27,7 +40,7 @@ int main(int argc, char** argv ){
     //diskreteFT(1, argv);
 
     //fileReader(argc, argv);
-    smoothing(argv[1]);
+    smoothing(filePath);
 
     //cv::waitKey();
 }
