@@ -40,7 +40,8 @@ int main(int argc, char** argv ){
     //diskreteFT(1, argv);
 
     //fileReader(argc, argv);
-    smoothing(filePath);
+    //smoothing(filePath);
+	diletation_eroding(filePath);
 
     //cv::waitKey();
 }

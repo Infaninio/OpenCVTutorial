@@ -598,6 +598,114 @@ int smoothing(std::string path){
 }
 
 
+cv::Mat srcDilEro;
+
+//Function which is called when one of the Trackbars (Diletation_Type or Diletation_Strength) has been changed.
+void diletation_TB(int, void*) {
+	int type, kernelSize;
+	type = cv::getTrackbarPos("Diletation_Type", "Diletation");
+	kernelSize = cv::getTrackbarPos("Diletation_Kernel_Size", "Diletation");
+
+	switch (type)
+	{
+	case 0:
+		type = cv::MORPH_RECT;
+		break;
+	case 1:
+		type = cv::MORPH_ELLIPSE;
+		break;
+	case 2:
+		type = cv::MORPH_CROSS;
+		break;
+	default:
+		std::cout << "Fehler: Diletation Trackbar Wert zu groß";
+		break;
+	}
+	cv::Mat dst;
+	if (kernelSize < 1) {
+		std::cout << "Warnung KernelSize darf nicht kleiner als 1 sein" << std::endl;
+		kernelSize = 1;
+	}
+
+	cv::Mat kernel = cv::getStructuringElement(type, cv::Size(kernelSize, kernelSize));
+	cv::dilate(srcDilEro, dst, kernel);
+
+	cv::imshow("Diletation", dst);
+
+}
+
+
+//Function which is called when one of the Trackbars (Erosion_Type or Erosion_Strength) has been changed.
+void erosion_TB(int, void*) {
+	int type, kernelSize;
+	type = cv::getTrackbarPos("Erosion_Type", "Erosion");
+	kernelSize = cv::getTrackbarPos("Erosion_Kernel_Size", "Erosion");
+
+	switch (type)
+	{
+	case 0:
+		type = cv::MORPH_RECT;
+		break;
+	case 1:
+		type = cv::MORPH_ELLIPSE;
+		break;
+	case 2:
+		type = cv::MORPH_CROSS;
+		break;
+	default:
+		std::cout << "Fehler: Erosion Trackbar Wert zu groß";
+		break;
+	}
+	cv::Mat dst;
+	if (kernelSize < 1) {
+		std::cout << "Warnung KernelSize darf nicht kleiner als 1 sein" << std::endl;
+		kernelSize = 1;
+	}
+	cv::Mat kernel = cv::getStructuringElement(type, cv::Size(kernelSize, kernelSize));
+	cv::erode(srcDilEro, dst, kernel);
+
+	cv::imshow("Erosion", dst);
+
+
+
+}
+
+
+
+int diletation_eroding(std::string path) {
+	srcDilEro = cv::imread(path);
+
+	if (srcDilEro.empty()) {
+		std::cout << "Fehler beim laden der Datei:\n" << path << std::endl;
+		return -1;
+	}
+
+	cv::resize(srcDilEro, srcDilEro, cv::Size(1080, 720));
+
+	cv::namedWindow("Erosion", cv::WINDOW_AUTOSIZE);
+	cv::namedWindow("Diletation", cv::WINDOW_AUTOSIZE);
+	cv::moveWindow("Diletation", 1920, 0);
+
+	int a = 0;
+	int* pa = &a;
+
+
+	//Trackbars for Diletation
+	cv::createTrackbar("Diletation_Type", "Diletation", pa, 2, diletation_TB);
+	cv::createTrackbar("Diletation_Kernel_Size", "Diletation", pa, 50, diletation_TB);
+
+
+	//Trackbars for Erosion
+	cv::createTrackbar("Erosion_Type", "Erosion", pa, 2, erosion_TB);
+	cv::createTrackbar("Erosion_Kernel_Size", "Erosion", pa, 50, erosion_TB);
+
+
+	cv::waitKey();
+
+
+
+
+}
 
 
 

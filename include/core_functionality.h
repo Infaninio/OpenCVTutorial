@@ -15,6 +15,7 @@ int drawing();
 int diskreteFT(int argc, char** argv);
 int fileReader(int argc, char** argv);
 int smoothing(std::string path);
+int diletation_eroding(std::string path);
 
 
 
